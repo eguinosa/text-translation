@@ -1,3 +1,5 @@
+# Ignore data documents
+data/*
 
 # MacOS File System
 .DS_Store

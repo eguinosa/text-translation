@@ -17,7 +17,7 @@ class MultiTranslator:
     }
 
     # The only languages tested with the project (to save in internet costs)
-    project_languages = {'en', 'es', 'de'}
+    project_languages = {'en', 'es', 'de', 'fr'}
 
     def __init__(self, target_lang='en'):
         """
@@ -29,9 +29,9 @@ class MultiTranslator:
         # --- REMOVE THIS 'IF' AFTER TESTING PHASE ---
         # Check if this is one of the languages we are using to test the
         # project, to avoid downloading another model $$$.
-        if target_lang != 'en':
+        if target_lang not in ['en', 'es']:
             raise Exception("The Language you are trying to use is not among"
-                            "the testing languages of this project.")
+                            " the testing languages of this project.")
 
         # Check if the class supports the target language.
         if target_lang not in self.supported_languages:

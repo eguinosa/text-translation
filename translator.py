@@ -1,5 +1,7 @@
 # Gelin Eguinosa Rosique
 
+from os import mkdir
+from os.path import isdir, join
 from transformers import MarianTokenizer, MarianMTModel
 
 
@@ -7,6 +9,8 @@ class Translator:
     """
     Class to translate text from a determined language to another.
     """
+    # Data Location
+    data_folder = 'data'
 
     # The Languages the Translation Model can work with.
     supported_languages = {
@@ -32,9 +36,31 @@ class Translator:
         # The name of the translation model:
         model_name = f'Helsinki-NLP/opus-mt-{text_lang}-{target_lang}'
 
-        # Load or Download the model and tokenizer:
-        self.model = MarianMTModel.from_pretrained(model_name)
-        self.tokenizer = MarianTokenizer.from_pretrained(model_name)
+        # Local Folders of the model and tokenizer:
+        model_folder = f'model_{text_lang}_{target_lang}'
+        tokenizer_folder = f'tokenizer_{text_lang}_{target_lang}'
+
+        # Check if the data folder exists, if not, create it.
+        if not isdir(self.data_folder):
+            mkdir(self.data_folder)
+
+        # Check if the languages' tokenizer is available locally.
+        tokenizer_folder_path = join(self.data_folder, tokenizer_folder)
+        if not isdir(tokenizer_folder_path):
+            # Download the tokenizer if it's not available
+            tokenizer = MarianTokenizer.from_pretrained(model_name)
+            tokenizer.save_pretrained(tokenizer_folder_path)
+
+        # Check if the languages' model is available locally
+        model_folder_path = join(self.data_folder, model_folder)
+        if not isdir(model_folder_path):
+            # Download the model if it's not available
+            model = MarianMTModel.from_pretrained(model_name)
+            model.save_pretrained(model_folder_path)
+
+        # Load the model and tokenizer from the local files:
+        self.model = MarianMTModel.from_pretrained(model_folder_path)
+        self.tokenizer = MarianTokenizer.from_pretrained(tokenizer_folder_path)
 
     def translate(self, text):
         """
@@ -94,7 +120,7 @@ class Translator:
 
 def _rejoin_with_dots(sentences):
     """
-    Rejoin the sentences of a text that was split by dots during the
+    Rejoin the sentences of a text that were split by dots during the
     translation because it had more than 750 characters.
     :param sentences: The sentences of the text that was split.
     :return: the rejoined text with the sentences in texts joined by dots.

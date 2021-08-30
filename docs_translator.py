@@ -7,47 +7,7 @@ from pprint import pprint
 from os import listdir, mkdir
 from os.path import isdir, isfile, join
 from multi_translator import MultiTranslator
-
-
-def files_index(folder_path, files_prefix, files_suffix):
-    """
-    Create an index of the files in the given folder with the given prefix and
-    suffix.
-    :param folder_path: The folder where the documents we want to index are.
-    :param files_prefix: The prefix of the files we want to index.
-    :param files_suffix: The suffix of the files we want to index.
-    :return: A dictionary with the id of the files, where the id is the string
-    of characters between the prefix and the suffix '<prefix><ID><suffix>'.
-    """
-    # Dictionary where the file names will be saved.
-    index = {}
-
-    # Go through the files inside the folder.
-    for file_name in listdir(folder_path):
-        # Create the path of the file
-        file_path = join(folder_path, file_name)
-
-        # Check if we have one of the intended files
-        if not isfile(file_path):
-            continue
-        if not file_name.startswith(files_prefix):
-            continue
-        if not file_name.endswith(files_suffix):
-            continue
-
-        # Create the id of the file with string between prefix and suffix.
-        i = len(files_prefix)
-        j = len(files_suffix)
-        file_id = file_name[i:-j]
-        # Check we don't have an empty value
-        if not file_id:
-            raise Exception("The ID of the file can't be an empty value.")
-
-        # Save the file in the index
-        index[file_id] = file_name
-
-    # Return the created index of the files.
-    return index
+from index_creation import files_index
 
 
 # Ignore warnings
@@ -104,24 +64,8 @@ for file_name in listdir(docs_folder):
         file.write(translation)
 
 # Create the index of the documents
-print("Creating the Index of the Documents.")
-docs_index = {}
-print()
-for file_name in listdir(docs_folder):
-    # Create the path of the file
-    file_path = join(docs_folder, file_name)
-    # Check if we are loading the intended documents.
-    if not isfile(file_path):
-        continue
-    if not file_name.startswith(docs_prefix):
-        continue
-    if not file_name.endswith('.txt'):
-        continue
-
-    # Add the document to the index
-    print(f"Saving in the documents index: {file_name}")
-    doc_id = file_name[-6:-4]
-    docs_index[doc_id] = file_name
+print("\nCreating the Index of the Documents.")
+docs_index = files_index(docs_folder, docs_prefix, '.txt')
 
 # Save the index of the documents
 docs_index_path = join(docs_folder, docs_index_file)
@@ -130,23 +74,7 @@ with open(docs_index_path, 'wb') as file:
 
 # Create the index of the translations
 print("Creating the Index of the Translations.")
-
-translation_index = {}
-for file_name in listdir(translation_folder):
-    # Create the path of the translation file
-    file_path = join(translation_folder, file_name)
-    # Check if we are loading the intended translation.
-    if not isfile(file_path):
-        continue
-    if not file_name.startswith(translation_prefix):
-        continue
-    if not file_name.endswith('.txt'):
-        continue
-
-    # Add the translation to the index
-    print(f"Saving in the translations index: {file_name}")
-    translation_id = file_name[-6:-4]
-    translation_index[translation_id] = file_name
+translation_index = files_index(translation_folder, translation_prefix + docs_prefix, '.txt')
 
 # Save the index of the translations
 translations_index_path = join(translation_folder, trans_index_file)

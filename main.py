@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
         # Translate the text
         print("Translating the Document.")
-        text_translation = translator.text_translation(file_text)
+        text_translation = translator.translation(file_text)
         print("Done.")
         print(f"[{stopwatch.run_time()}]")
 
@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
         # Translate the text
         print("\nTranslating Text.")
-        translation = translator.text_translation(answer)
+        translation = translator.translation(answer)
         print("\nTranslation:")
         print(translation)
         print(f"[{stopwatch.run_time()}]")

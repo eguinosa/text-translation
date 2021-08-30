@@ -1,7 +1,7 @@
 # Gelin Eguinosa Rosique
 
 from language_detector import Detector
-from translator import Translator
+from simple_translator import Translator
 
 
 class MultiTranslator:
@@ -42,7 +42,27 @@ class MultiTranslator:
         # Create a Language Detector instance.
         self.lang_detector = Detector()
 
-    def text_translation(self, text):
+    def translation(self, text):
+        """
+        Check if text is a document or a list of documents before calling the
+        text translation.
+        :param text: A document or a list of documents.
+        :return: The translations of the text
+        """
+        # Check if we are receiving a list of texts
+        if type(text) == list:
+            # Create a list to store the translations
+            translations = []
+            # Translate each of the strings inside text
+            for content in text:
+                translation = self._text_translation(content)
+                translations.append(translation)
+            # Return all the translations
+            return translations
+        # We are only receiving one text
+        return self._text_translation(text)
+
+    def _text_translation(self, text):
         """
         Detect the languages in the text and translate its content to the target
         language.
